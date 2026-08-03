@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Predictor Hack</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #030705;
+      --card: #0b140e;
+      --green: #00ff66;
+      --green-glow: rgba(0, 255, 102, 0.4);
+      --green-dim: rgba(0, 255, 102, 0.12);
+      --red: #ff2255;
+      --cyan: #00e5ff;
+      --amber: #ffaa00;
+      --text: #e0ffe9;
+      --text-dim: #6a8c75;
+      --border: rgba(0, 255, 102, 0.2);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        linear-gradient(rgba(0, 255, 102, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 102, 0.03) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 440px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .screen {
+      display: none;
+      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* --- TOP HEADER --- */
+    .top-bar {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .brand {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--green);
+      letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--green);
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .status-badge {
+      font-size: 10px;
+      color: var(--cyan);
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    /* --- ECRAN 0: SELECTEUR DE JEU --- */
+    .select-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 18px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    .select-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--green);
+      margin-bottom: 6px;
+    }
+
+    .select-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+
+    .game-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .game-card {
+      background: rgba(0, 255, 102, 0.04);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .game-card:hover {
+      border-color: var(--green);
+      background: rgba(0, 255, 102, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 0 20px var(--green-dim);
+    }
+
+    .game-info {
+      text-align: left;
+    }
+
+    .game-icon {
+      font-size: 28px;
+    }
+
+    .game-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .game-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* --- ECRAN 1: CHARGEMENT --- */
+    .loader-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 20px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    .loader-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      color: var(--green);
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    .loader-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 10px;
+      padding: 1px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      border-radius: 4px;
+      box-shadow: 0 0 12px var(--green);
+      transition: width 0.15s linear;
+    }
+
+    /* --- STEP INSTRUCTION --- */
+    .step-banner {
+      background: rgba(0, 255, 102, 0.08);
+      border: 2px solid var(--green);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+      margin-bottom: 14px;
+      box-shadow: 0 0 20px var(--green-dim);
+    }
+
+    .step-number {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--amber);
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .step-text {
+      font-size: 15px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    /* --- CARTE PRINCIPALE DE SIGNAL --- */
+    .signal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 18px;
+      text-align: center;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .signal-title {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .main-value-wrap {
+      background: rgba(0, 255, 102, 0.05);
+      border: 2px dashed var(--green);
+      border-radius: 14px;
+      padding: 18px 10px;
+      margin-bottom: 16px;
+    }
+
+    .main-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 56px;
+      font-weight: 900;
+      color: var(--green);
+      text-shadow: 0 0 25px var(--green-glow);
+      line-height: 1;
+    }
+
+    .main-value-sub {
+      font-size: 11px;
+      color: var(--green);
+      font-weight: 700;
+      margin-top: 6px;
+      letter-spacing: 1px;
+    }
+
+    .sub-info {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sub-info-label {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .sub-info-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--red);
+    }
+
+    /* --- STYLES SPECIFIQUES PENALTY SHOOT-OUT --- */
+    .goal-container {
+      background: #05140b;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .goal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .goal-spot {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px dashed var(--text-dim);
+      border-radius: 8px;
+      padding: 14px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .goal-spot.target {
+      background: rgba(0, 255, 102, 0.25);
+      border: 2px solid var(--green);
+      color: #ffffff;
+      box-shadow: 0 0 20px var(--green-glow);
+      animation: pulseGoal 1s infinite alternate;
+    }
+
+    .goal-spot.center-spot {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @keyframes pulseGoal {
+      from { transform: scale(0.98); box-shadow: 0 0 10px var(--green); }
+      to { transform: scale(1.02); box-shadow: 0 0 25px var(--green); }
+    }
+
+    /* --- STYLES SPECIFIQUES APPLE OF FORTUNE --- */
+    .apple-board {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 7px;
+      background: #071209;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .apple-row {
+      display: grid;
+      grid-template-columns: 42px repeat(5, 1fr);
+      align-items: center;
+      gap: 6px;
+    }
+
+    .apple-multi {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--amber);
+      text-align: left;
+    }
+
+    .apple-cell {
+      aspect-ratio: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 9px;
+      background: rgba(0, 0, 0, 0.55);
+      color: var(--text-dim);
+      font-size: 18px;
+      transition: all 0.25s ease;
+    }
+
+    .apple-cell.scanning {
+      border-color: var(--cyan);
+      background: rgba(0, 229, 255, 0.12);
+      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+    }
+
+    .apple-cell.safe {
+      background: rgba(0, 255, 102, 0.22);
+      border: 2px solid var(--green);
+      color: #fff;
+      box-shadow: 0 0 18px var(--green-glow);
+      animation: pulseGoal 0.8s infinite alternate;
+    }
+
+    /* --- BOUTONS --- */
+    .btn {
+      width: 100%;
+      padding: 20px;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-main {
+      background: linear-gradient(135deg, #00ff66, #00cc52);
+      color: #030705;
+      box-shadow: 0 0 30px var(--green-glow);
+    }
+
+    .btn-main:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 0 40px var(--green-glow);
+    }
+
+    .btn-main:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      background: #1a2920;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* --- ECRAN VIP UNLOCK --- */
+    .unlock-box {
+      background: var(--card);
+      border: 2px solid var(--amber);
+      border-radius: 18px;
+      padding: 24px 18px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255, 170, 0, 0.2);
+    }
+
+    .unlock-badge {
+      display: inline-block;
+      background: rgba(255, 170, 0, 0.15);
+      border: 1px solid var(--amber);
+      color: var(--amber);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .unlock-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .unlock-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .action-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .btn-deposit-gold {
+      background: linear-gradient(135deg, #ffaa00, #ff7700);
+      color: #000;
+      border: none;
+      border-radius: 14px;
+      padding: 18px 14px;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 0 25px rgba(255, 170, 0, 0.4);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-deposit-gold:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 35px rgba(255, 170, 0, 0.6);
+    }
+
+    .gold-left {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gold-step {
+      font-size: 10px;
+      font-weight: 900;
+      color: rgba(0, 0, 0, 0.6);
+      letter-spacing: 1px;
+    }
+
+    .gold-main {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: #000;
+    }
+
+    .gold-sub {
+      font-size: 10px;
+      font-weight: 700;
+      color: rgba(0, 0, 0, 0.8);
+      margin-top: 2px;
+    }
+
+    .gold-arrow {
+      font-size: 22px;
+      font-weight: 900;
+      color: #000;
+    }
+
+    .btn-tg-cyan {
+      background: rgba(0, 229, 255, 0.08);
+      border: 2px solid var(--cyan);
+      border-radius: 14px;
+      padding: 16px 14px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-tg-cyan:hover {
+      background: rgba(0, 229, 255, 0.18);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+    }
+
+    .tg-main {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--cyan);
+    }
+
+    .tg-sub {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    .footer-guarantee {
+      font-size: 10px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- TOP STATUS BAR -->
+  <div class="top-bar">
+    <div class="brand" id="brand-title">
+      <div class="brand-dot"></div>
+      AI PREDICTOR v4.2
+    </div>
+    <div class="status-badge" id="net-status">SERVEUR CONNECTÉ</div>
+  </div>
+
+  <!-- ÉCRAN 0 : SÉLECTION DU JEU -->
+  <div class="screen active" id="screen-select">
+    <div class="select-box">
+      <div class="select-title">SÉLECTIONNER LE JEU</div>
+      <div class="select-desc">Choisissez l'algorithme à pirater :</div>
+      
+      <div class="game-grid">
+        <div class="game-card" onclick="startHack('apple')">
+          <div class="game-info">
+            <div class="game-name">🍎 APPLE OF FORTUNE</div>
+            <div class="game-sub">Détection du Chemin Gagnant</div>
+          </div>
+          <div style="color: var(--green); font-weight: 900;">➔</div>
+        </div>
+
+        <div class="game-card" style="order: -1;" onclick="startHack('aviator')">
+          <div class="game-info">
+            <div class="game-name">✈️ AVIATOR</div>
+            <div class="game-sub">Prédiction du Multiplicateur</div>
+          </div>
+          <div style="color: var(--green); font-weight: 900;">➔</div>
+        </div>
+
+        <div class="game-card" onclick="startHack('penalty')">
+          <div class="game-info">
+            <div class="game-name">⚽ PENALTY SHOOT-OUT</div>
+            <div class="game-sub">Détection de la Zone de But</div>
+          </div>
+          <div style="color: var(--green); font-weight: 900;">➔</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ÉCRAN 1 : CHARGEMENT HACKER -->
+  <div class="screen" id="screen-boot">
+    <div class="loader-box">
+      <div class="loader-title" id="boot-title">BYPASS DES ALGORITHMES</div>
+      <div class="loader-desc">Connexion au serveur du jeu en cours...</div>
+      
+      <div class="progress-bar">
+        <div class="progress-fill" id="boot-bar"></div>
+      </div>
+      
+      <div class="loader-desc" id="boot-pct" style="color: var(--green); font-weight: 700; margin-bottom: 0;">0%</div>
+    </div>
+  </div>
+
+  <!-- ÉCRAN 2A : PREDICTEUR AVIATOR -->
+  <div class="screen" id="screen-dash-aviator">
+    <div class="step-banner">
+      <div class="step-number" id="step-num-av">ÉTAPE 1 SUR 2</div>
+      <div class="step-text" id="step-txt-av">Appuyez sur le GROS BOUTON VERT en bas !</div>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-title">RETIRER VOTRE ARGENT À :</div>
+      
+      <div class="main-value-wrap">
+        <div class="main-value" id="val-safe">?.??x</div>
+        <div class="main-value-sub">← CASHOUT ICI SUR AVIATOR</div>
+      </div>
+
+      <div class="sub-info">
+        <span class="sub-info-label">Crash estimé de l'avion :</span>
+        <span class="sub-info-val" id="val-crash">--.--x</span>
+      </div>
+    </div>
+
+    <button class="btn btn-main" id="btn-scan-av">OBTENIR LE SIGNAL</button>
+  </div>
+
+  <!-- ÉCRAN 2B : PREDICTEUR PENALTY SHOOT-OUT -->
+  <div class="screen" id="screen-dash-penalty">
+    <div class="step-banner">
+      <div class="step-number" id="step-num-pen">ANALYSE DU GARDIEN</div>
+      <div class="step-text" id="step-txt-pen">Cliquez sur le bouton pour détecter le tir réussi !</div>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-title">ZONE DE TIR RECOMMANDÉE :</div>
+      
+      <div class="goal-container">
+        <div class="goal-grid">
+          <div class="goal-spot" id="spot-tl">HAUT GAUCHE</div>
+          <div class="goal-spot center-spot" id="spot-c">CENTRE</div>
+          <div class="goal-spot" id="spot-tr">HAUT DROITE</div>
+          <div class="goal-spot" id="spot-bl">BAS GAUCHE</div>
+          <div class="goal-spot" id="spot-br">BAS DROITE</div>
+        </div>
+      </div>
+
+      <div class="sub-info">
+        <span class="sub-info-label">Probabilité de BUT :</span>
+        <span class="sub-info-val" id="val-prob" style="color: var(--green);">98.8%</span>
+      </div>
+    </div>
+
+    <button class="btn btn-main" id="btn-scan-pen">OBTENIR LE SIGNAL</button>
+  </div>
+
+  <!-- ÉCRAN 3 : DÉBLOCAGE VIP -->
+  <!-- ECRAN 2C : PREDICTEUR APPLE OF FORTUNE -->
+  <div class="screen" id="screen-dash-apple">
+    <div class="step-banner">
+      <div class="step-number" id="step-num-apple">ANALYSE DU VERGER</div>
+      <div class="step-text" id="step-txt-apple">Cliquez sur le bouton pour trouver les pommes sûres !</div>
+    </div>
+
+    <div class="signal-card">
+      <div class="signal-title">CHEMIN RECOMMANDÉ :</div>
+      <div class="apple-board" id="apple-board"></div>
+      <div class="sub-info">
+        <span class="sub-info-label">Objectif de retrait :</span>
+        <span class="sub-info-val" id="apple-target" style="color: var(--green);">--</span>
+      </div>
+    </div>
+
+    <button class="btn btn-main" id="btn-scan-apple">OBTENIR LE SIGNAL</button>
+  </div>
+
+  <div class="screen" id="screen-unlock">
+    <div class="unlock-box">
+      
+      <div class="unlock-badge">TEST GRATUIT TERMINÉ</div>
+      <div class="unlock-title">DÉBLOQUER L'ACCÈS ILLIMITÉ</div>
+      <div class="unlock-desc">
+        Le signal gratuit est validé ! Pour activer le Bot en continu et recevoir tous les signaux 24/7 :
+      </div>
+
+      <div class="action-cards">
+        
+        <!-- ÉTAPE 1 : BOUTON OR MAGNETIQUE -->
+        <div class="btn-deposit-gold" id="btn-deposit">
+          <div class="gold-left">
+            <span class="gold-step">ÉTAPE 1 (OBLIGATOIRE)</span>
+            <span class="gold-main">RECHARGER VOTRE COMPTE</span>
+            <span class="gold-sub">Déposez min. 1200 XOF sur le jeu pour activer</span>
+          </div>
+          <div class="gold-arrow">➔</div>
+        </div>
+
+        <!-- ÉTAPE 2 : TELEGRAM -->
+        <div class="btn-tg-cyan" id="btn-tg">
+          <div>
+            <div class="tg-main">ÉTAPE 2 : ENVOYER LA PREUVE</div>
+            <div class="tg-sub">Envoyez la capture d'écran pour recevoir la clé VIP</div>
+          </div>
+          <div style="color: var(--cyan); font-weight: 900; font-size: 18px;">➔</div>
+        </div>
+
+      </div>
+
+      <div class="footer-guarantee">
+        <span>🔒 Activation automatique en 2 minutes</span>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let currentGame = '';
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  /* Lancement Hack après Choix de Jeu */
+  function startHack(game) {
+    currentGame = game;
+    const brandTitle = document.getElementById('brand-title');
+    const bootTitle = document.getElementById('boot-title');
+
+    if (game === 'apple') {
+      brandTitle.innerHTML = '<div class="brand-dot"></div> APPLE HACK v4.2';
+      bootTitle.textContent = 'ANALYSE APPLE OF FORTUNE';
+    } else if (game === 'aviator') {
+      brandTitle.innerHTML = '<div class="brand-dot"></div> AVIATOR HACK v4.2';
+      bootTitle.textContent = 'BYPASS ALGORITHME AVIATOR';
+    } else {
+      brandTitle.innerHTML = '<div class="brand-dot"></div> PENALTY HACK v4.2';
+      bootTitle.textContent = 'ANALYSIS GARDIEN PENALTY';
+    }
+
+    showScreen('screen-boot');
+    runBootLoader();
+  }
+
+  /* Chargement Hacker */
+  function runBootLoader() {
+    let progress = 0;
+    const bootBar = document.getElementById('boot-bar');
+    const bootPct = document.getElementById('boot-pct');
+    bootBar.style.width = '0%';
+
+    const bootInterval = setInterval(() => {
+      progress += Math.floor(Math.random() * 18) + 6;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(bootInterval);
+        setTimeout(() => {
+          if (currentGame === 'apple') {
+            resetAppleBoard();
+            showScreen('screen-dash-apple');
+          } else if (currentGame === 'aviator') {
+            showScreen('screen-dash-aviator');
+          } else {
+            showScreen('screen-dash-penalty');
+          }
+        }, 300);
+      }
+      bootBar.style.width = progress + '%';
+      bootPct.textContent = progress + '%';
+    }, 120);
+  }
+
+  /* --- LOGIQUE APPLE OF FORTUNE --- */
+  const appleMultipliers = ['1.23x'];
+  const appleBoard = document.getElementById('apple-board');
+  const btnScanApple = document.getElementById('btn-scan-apple');
+  const stepNumApple = document.getElementById('step-num-apple');
+  const stepTxtApple = document.getElementById('step-txt-apple');
+  const appleTarget = document.getElementById('apple-target');
+
+  function resetAppleBoard() {
+    appleBoard.innerHTML = '';
+    appleMultipliers.forEach((multiplier, rowIndex) => {
+      const row = document.createElement('div');
+      row.className = 'apple-row';
+      row.dataset.row = rowIndex;
+      row.innerHTML = '<div class="apple-multi">' + multiplier + '</div>';
+
+      for (let column = 0; column < 5; column++) {
+        const cell = document.createElement('div');
+        cell.className = 'apple-cell';
+        cell.dataset.column = column;
+        cell.textContent = '?';
+        row.appendChild(cell);
+      }
+      appleBoard.appendChild(row);
+    });
+
+    btnScanApple.disabled = false;
+    btnScanApple.textContent = 'OBTENIR LE SIGNAL';
+    stepNumApple.textContent = 'ANALYSE DU VERGER';
+    stepTxtApple.textContent = 'Cliquez sur le bouton pour trouver les pommes sûres !';
+    appleTarget.textContent = '--';
+  }
+
+  btnScanApple.addEventListener('click', () => {
+    appleBoard.querySelectorAll('.apple-cell').forEach(cell => {
+      cell.classList.remove('safe', 'scanning');
+      cell.textContent = '?';
+    });
+    btnScanApple.disabled = true;
+    btnScanApple.textContent = 'ANALYSE DES POMMES...';
+    stepNumApple.textContent = 'RECHERCHE DE FAILLE...';
+    stepTxtApple.textContent = 'Calcul du chemin le plus sécurisé...';
+
+    const path = appleMultipliers.map(() => Math.floor(Math.random() * 5));
+    const rows = Array.from(appleBoard.querySelectorAll('.apple-row'));
+    let currentRow = 0;
+
+    const revealNextRow = () => {
+      if (currentRow >= rows.length) {
+        appleTarget.textContent = appleMultipliers[appleMultipliers.length - 1];
+        stepNumApple.textContent = 'CHEMIN TROUVÉ !';
+        stepTxtApple.textContent = 'Suivez uniquement les pommes vertes, puis retirez à ' + appleTarget.textContent + ' !';
+        btnScanApple.textContent = 'NOUVEAU SIGNAL 🍎';
+        btnScanApple.disabled = false;
+        return;
+      }
+
+      const cells = Array.from(rows[currentRow].querySelectorAll('.apple-cell'));
+      cells.forEach(cell => cell.classList.add('scanning'));
+
+      setTimeout(() => {
+        cells.forEach(cell => cell.classList.remove('scanning'));
+        const safeCell = cells[path[currentRow]];
+        safeCell.classList.add('safe');
+        safeCell.textContent = '🍎';
+        appleTarget.textContent = appleMultipliers[currentRow];
+        currentRow += 1;
+        setTimeout(revealNextRow, 260);
+      }, 420);
+    };
+
+    setTimeout(revealNextRow, 900);
+  });
+
+  resetAppleBoard();
+
+  /* --- LOGIQUE AVIATOR --- */
+  const btnScanAv = document.getElementById('btn-scan-av');
+  const valSafe = document.getElementById('val-safe');
+  const valCrash = document.getElementById('val-crash');
+  const stepNumAv = document.getElementById('step-num-av');
+  const stepTxtAv = document.getElementById('step-txt-av');
+
+  btnScanAv.addEventListener('click', () => {
+    btnScanAv.disabled = true;
+    btnScanAv.textContent = 'INJECTION DU HACK...';
+    
+    stepNumAv.textContent = 'ANALYSE EN COURS';
+    stepTxtAv.textContent = 'Calcul du multiplicateur le plus sécurisé...';
+
+    setTimeout(() => {
+      const crashVal = (1.8 + Math.random() * 3.5).toFixed(2);
+      const safeVal = (crashVal * 0.68).toFixed(2);
+
+      valSafe.textContent = safeVal + 'x';
+      valCrash.textContent = crashVal + 'x';
+
+      stepNumAv.textContent = 'SIGNAL PRÊT !';
+      stepTxtAv.textContent = 'Entrez sur Aviator et retirez à ' + safeVal + 'x exacts !';
+
+      setTimeout(() => {
+        btnScanAv.textContent = 'ROUND EN COURS...';
+        let current = 1.00;
+        
+        const roundInterval = setInterval(() => {
+          current += 0.08;
+          if (current >= parseFloat(crashVal)) {
+            clearInterval(roundInterval);
+            valCrash.textContent = crashVal + 'x (CRASH)';
+            btnScanAv.textContent = 'SIGNAL TERMINÉ';
+            
+            setTimeout(() => {
+              btnScanAv.disabled = false;
+              btnScanAv.textContent = 'NOUVEAU SIGNAL';
+            }, 1200);
+          }
+        }, 70);
+      }, 2500);
+
+    }, 1800);
+  });
+
+  /* --- LOGIQUE PENALTY SHOOT-OUT --- */
+  const btnScanPen = document.getElementById('btn-scan-pen');
+  const stepNumPen = document.getElementById('step-num-pen');
+  const stepTxtPen = document.getElementById('step-txt-pen');
+  const spots = ['tl', 'tr', 'c', 'bl', 'br'];
+  const spotNames = {
+    'tl': 'HAUT GAUCHE',
+    'tr': 'HAUT DROITE',
+    'c': 'CENTRE',
+    'bl': 'BAS GAUCHE',
+    'br': 'BAS DROITE'
+  };
+
+  btnScanPen.addEventListener('click', () => {
+    btnScanPen.disabled = true;
+    btnScanPen.textContent = 'ANALYSE DU GARDIEN...';
+    
+    // Reset spots
+    spots.forEach(s => document.getElementById('spot-' + s).classList.remove('target'));
+
+    stepNumPen.textContent = 'RECHERCHE DE FAILLE...';
+    stepTxtPen.textContent = 'Détection de l\'angle mort du gardien...';
+
+    setTimeout(() => {
+      // Pick random winning spot
+      const chosenSpot = spots[Math.floor(Math.random() * spots.length)];
+      const targetElem = document.getElementById('spot-' + chosenSpot);
+      
+      targetElem.classList.add('target');
+
+      stepNumPen.textContent = 'SIGNAL OBTENU !';
+      stepTxtPen.textContent = 'TIRER EN : ' + spotNames[chosenSpot] + ' !';
+      btnScanPen.textContent = 'TIR EN COURS...';
+
+      setTimeout(() => {
+        btnScanPen.textContent = 'BUT MARQUÉ ! ⚽';
+        
+        setTimeout(() => {
+          btnScanPen.disabled = false;
+          btnScanPen.textContent = 'NOUVEAU SIGNAL';
+        }, 1500);
+      }, 2500);
+
+    }, 1800);
+  });
+
+</script>
+</body>
+</html>
