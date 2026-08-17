@@ -2,709 +2,494 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Predictor Hack</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#05080a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>HERMES SCAN — Jean Dossou</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #030705;
-      --card: #0b140e;
-      --green: #00ff66;
-      --green-glow: rgba(0, 255, 102, 0.4);
-      --green-dim: rgba(0, 255, 102, 0.12);
-      --red: #ff2255;
-      --cyan: #00e5ff;
-      --amber: #ffaa00;
-      --text: #e0ffe9;
-      --text-dim: #6a8c75;
-      --border: rgba(0, 255, 102, 0.2);
+      --bg: #05080a;
+      --card: #0c1512;
+      --green: #00ff88;
+      --green-glow: rgba(0, 255, 136, 0.45);
+      --red: #ff2d55;
+      --cyan: #29d4ff;
+      --amber: #ffcc33;
+      --gold: #ffb000;
+      --text: #f3fff7;
+      --text-dim: #7a9a86;
+      --border: rgba(0, 255, 136, 0.22);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    html, body { height: 100%; }
 
     body {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: 'Nunito', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       justify-content: center;
-      align-items: center;
-      padding: 14px;
-      position: relative;
+      padding: calc(10px + var(--safe-t)) 10px calc(16px + var(--safe-b));
       overflow-x: hidden;
+      touch-action: manipulation;
     }
 
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background: 
-        linear-gradient(rgba(0, 255, 102, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 102, 0.03) 1px, transparent 1px);
-      background-size: 24px 24px;
+      background:
+        radial-gradient(ellipse at 50% -8%, rgba(0, 255, 136, 0.14), transparent 48%),
+        radial-gradient(ellipse at 100% 90%, rgba(41, 212, 255, 0.08), transparent 42%),
+        linear-gradient(rgba(0, 255, 136, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.035) 1px, transparent 1px);
+      background-size: auto, auto, 22px 22px, 22px 22px;
       pointer-events: none;
       z-index: 0;
     }
 
+    .scan-line {
+      position: fixed; left: 0; right: 0; height: 110px;
+      background: linear-gradient(to bottom, transparent, rgba(0,255,136,0.07), transparent);
+      animation: scanMove 4.8s linear infinite;
+      pointer-events: none; z-index: 0;
+    }
+    @keyframes scanMove { from { top: -110px; } to { top: 110%; } }
+
     .container {
       width: 100%;
-      max-width: 440px;
+      max-width: 430px;
       position: relative;
       z-index: 1;
     }
 
-    .screen {
-      display: none;
-      animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .screen.active {
-      display: block;
-    }
-
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn 0.25s ease; }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
     }
 
-    /* --- TOP HEADER --- */
-    .top-bar {
+    /* ACCESS GATE */
+    .access-gate {
+      position: fixed; inset: 0; z-index: 80;
+      display: flex; align-items: center; justify-content: center;
+      background: #030605;
+      padding: 20px;
+      transition: opacity 0.35s ease, visibility 0.35s;
+    }
+    .access-gate.hide {
+      opacity: 0; visibility: hidden; pointer-events: none;
+    }
+    .access-card {
+      width: 100%; max-width: 360px;
+      text-align: center;
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
+      border-radius: 22px;
+      padding: 32px 20px 24px;
+      box-shadow: 0 0 50px rgba(0,255,136,0.12);
     }
-
-    .brand {
+    .radar {
+      width: 78px; height: 78px; margin: 0 auto 16px;
+      border: 2px solid var(--green); border-radius: 50%;
+      position: relative; box-shadow: 0 0 22px var(--green-glow);
+    }
+    .radar::before { content: ''; position: absolute; inset: 12px; border: 1px solid rgba(0,255,136,0.25); border-radius: 50%; }
+    .radar span {
+      position: absolute; inset: 5px; border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent 68%, var(--green));
+      animation: spin 0.65s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .access-brand {
       font-family: 'Orbitron', sans-serif;
-      font-size: 13px;
-      font-weight: 900;
-      color: var(--green);
-      letter-spacing: 1.5px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 18px; font-weight: 900; color: var(--green);
+      letter-spacing: 2px; margin-bottom: 8px;
     }
-
-    .brand-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--green);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--green);
-      animation: blink 1.2s infinite;
+    .access-ok {
+      font-size: 22px; font-weight: 900; color: #fff;
+      letter-spacing: 0.5px; margin-bottom: 14px;
     }
-
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
+    .access-ok.ready { color: var(--green); text-shadow: 0 0 18px var(--green-glow); }
+    .access-bar {
+      height: 8px; background: #050807; border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden; margin-bottom: 10px;
     }
-
-    .status-badge {
-      font-size: 10px;
-      color: var(--cyan);
-      background: rgba(0, 229, 255, 0.1);
-      border: 1px solid rgba(0, 229, 255, 0.3);
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-weight: 700;
-      letter-spacing: 1px;
+    .access-fill {
+      height: 100%; width: 0;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      box-shadow: 0 0 12px var(--green);
+      transition: width 0.08s linear;
     }
+    .access-author { font-size: 12px; color: var(--amber); font-weight: 800; }
 
-    /* --- ECRAN 0: SELECTEUR DE JEU --- */
-    .select-box {
-      background: var(--card);
+    .top-bar {
+      background: rgba(12,21,18,0.94);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 24px 18px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      padding: 10px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .brand {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px; font-weight: 900; color: var(--green);
+      letter-spacing: 1.4px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .brand-dot {
+      width: 8px; height: 8px; background: var(--green); border-radius: 50%;
+      box-shadow: 0 0 10px var(--green); animation: blink 1.1s infinite;
+    }
+    @keyframes blink { 50% { opacity: 0.25; } }
+    .author { font-size: 10px; color: var(--amber); font-weight: 800; padding-left: 16px; }
+    .status-badge {
+      font-size: 10px; color: var(--cyan); font-weight: 800;
+      background: rgba(41,212,255,0.1); border: 1px solid rgba(41,212,255,0.35);
+      padding: 5px 8px; border-radius: 8px; letter-spacing: 0.6px;
+    }
+
+    .live-strip {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(0,0,0,0.45); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px 10px; margin-bottom: 10px; overflow: hidden;
+    }
+    .live-pill {
+      flex-shrink: 0; background: var(--red); color: #fff;
+      font-size: 9px; font-weight: 900; padding: 3px 7px; border-radius: 6px;
+      animation: blink 1.4s infinite;
+    }
+    .live-text { font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .online-count { margin-left: auto; flex-shrink: 0; font-size: 10px; color: var(--green); font-weight: 800; }
+
+    .select-box, .signal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px 12px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.5);
     }
 
     .select-title {
       font-family: 'Orbitron', sans-serif;
-      font-size: 16px;
-      font-weight: 900;
-      color: var(--green);
-      margin-bottom: 6px;
+      font-size: 15px; font-weight: 900; color: var(--green);
+      text-align: center; margin-bottom: 4px;
     }
-
     .select-desc {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-bottom: 20px;
+      font-size: 13px; color: var(--text-dim); text-align: center;
+      font-weight: 800; margin-bottom: 6px;
+    }
+    .vip-badge {
+      display: block; width: fit-content; margin: 0 auto 12px;
+      background: rgba(0,255,136,0.1); border: 1px solid var(--green);
+      color: var(--green); font-size: 11px; font-weight: 900;
+      padding: 4px 10px; border-radius: 999px;
     }
 
-    .game-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
+    .game-grid { display: flex; flex-direction: column; gap: 9px; }
     .game-card {
-      background: rgba(0, 255, 102, 0.04);
+      background: linear-gradient(90deg, rgba(0,255,136,0.05), rgba(255,255,255,0.02));
       border: 2px solid var(--border);
-      border-radius: 14px;
-      padding: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      transition: all 0.2s ease;
+      border-radius: 16px; padding: 9px;
+      display: flex; align-items: center; gap: 11px;
+      cursor: pointer; position: relative; overflow: hidden;
     }
-
-    .game-card:hover {
-      border-color: var(--green);
-      background: rgba(0, 255, 102, 0.1);
-      transform: translateY(-2px);
-      box-shadow: 0 0 20px var(--green-dim);
+    .game-card::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+      transform: translateX(-120%); animation: shine 3.4s ease infinite;
     }
-
-    .game-info {
-      text-align: left;
+    @keyframes shine {
+      0%, 58% { transform: translateX(-120%); }
+      82%, 100% { transform: translateX(120%); }
     }
-
-    .game-icon {
-      font-size: 28px;
+    .game-card:active { transform: scale(0.98); }
+    .game-thumb {
+      width: 58px; height: 58px; border-radius: 12px;
+      object-fit: cover; flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.12); background: #111;
     }
+    .game-name { font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 900; color: #fff; }
+    .game-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; font-weight: 800; }
+    .game-go { margin-left: auto; color: var(--green); font-weight: 900; font-size: 20px; padding-right: 4px; }
 
-    .game-name {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 15px;
-      font-weight: 900;
-      color: #fff;
-    }
-
-    .game-sub {
-      font-size: 11px;
-      color: var(--text-dim);
-      margin-top: 2px;
-    }
-
-    /* --- ECRAN 1: CHARGEMENT --- */
-    .loader-box {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px 20px;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    }
-
-    .loader-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 16px;
-      font-weight: 900;
-      color: var(--green);
-      margin-bottom: 6px;
-      letter-spacing: 1px;
-    }
-
-    .loader-desc {
-      font-size: 12px;
-      color: var(--text-dim);
-      margin-bottom: 24px;
-    }
-
-    .progress-bar {
-      height: 10px;
-      background: rgba(0,0,0,0.6);
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      overflow: hidden;
-      margin-bottom: 10px;
-      padding: 1px;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--green), var(--cyan));
-      border-radius: 4px;
-      box-shadow: 0 0 12px var(--green);
-      transition: width 0.15s linear;
-    }
-
-    /* --- STEP INSTRUCTION --- */
     .step-banner {
-      background: rgba(0, 255, 102, 0.08);
-      border: 2px solid var(--green);
-      border-radius: 14px;
-      padding: 14px;
-      text-align: center;
-      margin-bottom: 14px;
-      box-shadow: 0 0 20px var(--green-dim);
+      background: rgba(0,255,136,0.08); border: 2px solid var(--green);
+      border-radius: 14px; padding: 11px; text-align: center;
+      margin-bottom: 10px; box-shadow: 0 0 16px var(--green-glow);
     }
-
-    .step-number {
-      font-size: 11px;
-      font-weight: 800;
-      color: var(--amber);
-      letter-spacing: 2px;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .step-text {
-      font-size: 15px;
-      font-weight: 800;
-      color: #ffffff;
-      line-height: 1.3;
-    }
-
-    /* --- CARTE PRINCIPALE DE SIGNAL --- */
-    .signal-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 24px 18px;
-      text-align: center;
-      margin-bottom: 14px;
-      position: relative;
-    }
+    .step-number { font-size: 11px; font-weight: 900; color: var(--amber); letter-spacing: 1.2px; margin-bottom: 3px; }
+    .step-text { font-size: 15px; font-weight: 900; color: #fff; line-height: 1.25; }
 
     .signal-title {
-      font-size: 12px;
-      color: var(--text-dim);
-      font-weight: 700;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-      text-transform: uppercase;
+      font-size: 12px; color: var(--text-dim); font-weight: 800;
+      letter-spacing: 0.8px; margin-bottom: 10px; text-transform: uppercase; text-align: center;
     }
-
     .main-value-wrap {
-      background: rgba(0, 255, 102, 0.05);
-      border: 2px dashed var(--green);
-      border-radius: 14px;
-      padding: 18px 10px;
-      margin-bottom: 16px;
+      background: rgba(0,255,136,0.06); border: 2px dashed var(--green);
+      border-radius: 14px; padding: 16px 8px 14px; margin-bottom: 10px;
+      text-align: center; position: relative; overflow: hidden;
     }
-
+    .fly { position: absolute; left: -36px; top: 10px; font-size: 20px; animation: fly 1.15s linear infinite; }
+    @keyframes fly { from { left: -40px; top: 26px; } to { left: 110%; top: 4px; } }
     .main-value {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 56px;
-      font-weight: 900;
-      color: var(--green);
-      text-shadow: 0 0 25px var(--green-glow);
-      line-height: 1;
+      font-family: 'Orbitron', sans-serif; font-size: clamp(42px, 14vw, 54px);
+      font-weight: 900; color: var(--green);
+      text-shadow: 0 0 24px var(--green-glow); line-height: 1;
     }
-
-    .main-value-sub {
-      font-size: 11px;
-      color: var(--green);
-      font-weight: 700;
-      margin-top: 6px;
-      letter-spacing: 1px;
-    }
-
+    .main-value.tick { animation: pop 0.22s ease; }
+    @keyframes pop { from { transform: scale(0.86); } to { transform: scale(1); } }
+    .main-value-sub { font-size: 12px; color: var(--green); font-weight: 800; margin-top: 6px; }
     .sub-info {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 10px;
-      padding: 10px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 10px 12px;
+      display: flex; justify-content: space-between; align-items: center; font-weight: 800;
     }
+    .sub-info-label { font-size: 12px; color: var(--text-dim); }
+    .sub-info-val { font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--red); }
 
-    .sub-info-label {
-      font-size: 11px;
-      color: var(--text-dim);
+    .crash-chart {
+      height: 78px; margin: 0 6px 8px; border-radius: 10px;
+      background: linear-gradient(#07140e, #050a08);
+      border: 1px solid var(--border); overflow: hidden;
     }
+    .crash-chart svg { width: 100%; height: 100%; display: block; }
 
-    .sub-info-val {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--red);
-    }
-
-    /* --- STYLES SPECIFIQUES PENALTY SHOOT-OUT --- */
     .goal-container {
-      background: #05140b;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 16px;
-      position: relative;
+      background: #05140b; border: 2px solid var(--border);
+      border-radius: 12px; padding: 8px; margin-bottom: 10px;
     }
-
     .goal-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      grid-template-rows: 1fr 1fr;
-      gap: 8px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px;
     }
-
     .goal-spot {
-      background: rgba(0, 0, 0, 0.6);
-      border: 1px dashed var(--text-dim);
-      border-radius: 8px;
-      padding: 14px 4px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-dim);
-      text-align: center;
-      transition: all 0.3s;
+      background: rgba(0,0,0,0.55); border: 1px dashed var(--text-dim);
+      border-radius: 8px; padding: 13px 3px; font-size: 11px; font-weight: 800;
+      color: var(--text-dim); text-align: center;
     }
-
     .goal-spot.target {
-      background: rgba(0, 255, 102, 0.25);
-      border: 2px solid var(--green);
-      color: #ffffff;
-      box-shadow: 0 0 20px var(--green-glow);
-      animation: pulseGoal 1s infinite alternate;
+      background: rgba(0,255,136,0.28); border: 2px solid var(--green); color: #fff;
+      box-shadow: 0 0 16px var(--green-glow); animation: pulse 0.7s infinite alternate;
     }
+    .goal-spot.scanning { border-color: var(--cyan); color: var(--cyan); background: rgba(41,212,255,0.12); }
+    .goal-spot.center-spot { grid-column: 2; grid-row: 1 / span 2; display: flex; align-items: center; justify-content: center; }
+    @keyframes pulse { from { transform: scale(0.98); } to { transform: scale(1.03); } }
 
-    .goal-spot.center-spot {
-      grid-column: 2;
-      grid-row: 1 / span 2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    @keyframes pulseGoal {
-      from { transform: scale(0.98); box-shadow: 0 0 10px var(--green); }
-      to { transform: scale(1.02); box-shadow: 0 0 25px var(--green); }
-    }
-
-    /* --- STYLES SPECIFIQUES APPLE OF FORTUNE --- */
     .apple-board {
-      display: flex;
-      flex-direction: column-reverse;
-      gap: 7px;
-      background: #071209;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 12px;
-      margin-bottom: 16px;
+      display: flex; flex-direction: column-reverse; gap: 5px;
+      background: #071209; border: 2px solid var(--border);
+      border-radius: 12px; padding: 8px;
+      max-height: min(52vh, 420px);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: 10px;
     }
-
     .apple-row {
-      display: grid;
-      grid-template-columns: 42px repeat(5, 1fr);
-      align-items: center;
-      gap: 6px;
+      display: grid; grid-template-columns: 48px repeat(5, 1fr);
+      align-items: center; gap: 4px;
     }
-
     .apple-multi {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 10px;
-      font-weight: 900;
-      color: var(--amber);
-      text-align: left;
+      font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 900;
+      color: var(--amber); text-align: left; line-height: 1.1;
     }
-
     .apple-cell {
-      aspect-ratio: 1;
-      min-width: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 9px;
-      background: rgba(0, 0, 0, 0.55);
-      color: var(--text-dim);
-      font-size: 18px;
-      transition: all 0.25s ease;
+      height: 32px; display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,0.12); border-radius: 7px;
+      background: rgba(0,0,0,0.55); color: var(--text-dim); font-size: 15px;
     }
-
-    .apple-cell.scanning {
-      border-color: var(--cyan);
-      background: rgba(0, 229, 255, 0.12);
-      box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
-    }
-
+    .apple-cell.scanning { border-color: var(--cyan); background: rgba(41,212,255,0.12); }
     .apple-cell.safe {
-      background: rgba(0, 255, 102, 0.22);
-      border: 2px solid var(--green);
-      color: #fff;
-      box-shadow: 0 0 18px var(--green-glow);
-      animation: pulseGoal 0.8s infinite alternate;
+      background: rgba(0,255,136,0.28); border: 2px solid var(--green); color: #fff;
+      box-shadow: 0 0 10px var(--green-glow); animation: pulse 0.8s infinite alternate;
     }
 
-    /* --- BOUTONS --- */
+    .btn-row { display: flex; gap: 8px; margin-top: 10px; }
     .btn {
-      width: 100%;
-      padding: 20px;
-      border: none;
-      border-radius: 14px;
-      font-family: 'Orbitron', sans-serif;
-      font-size: 16px;
-      font-weight: 900;
-      letter-spacing: 1.5px;
-      cursor: pointer;
-      text-transform: uppercase;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      overflow: hidden;
+      flex: 1; border: none; border-radius: 14px;
+      padding: 15px 10px; font-family: 'Nunito', sans-serif;
+      font-size: 16px; font-weight: 900; cursor: pointer; text-transform: uppercase;
     }
-
     .btn-main {
-      background: linear-gradient(135deg, #00ff66, #00cc52);
-      color: #030705;
-      box-shadow: 0 0 30px var(--green-glow);
+      background: linear-gradient(135deg, #00ff88, #00c853);
+      color: #041108; box-shadow: 0 0 24px var(--green-glow);
+      animation: ctaPulse 1.6s ease infinite;
+    }
+    @keyframes ctaPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.012); box-shadow: 0 0 32px var(--green-glow); }
+    }
+    .btn:disabled { background: #1a2920; color: var(--text-dim); box-shadow: none; animation: none; }
+    .btn-back {
+      flex: 0 0 52px; background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border); color: var(--text); font-size: 20px;
+      animation: none; box-shadow: none;
     }
 
-    .btn-main:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 0 40px var(--green-glow);
+    .footer-author {
+      text-align: center; margin-top: 10px;
+      font-size: 11px; color: var(--text-dim); font-weight: 800;
     }
+    .footer-author b { color: var(--amber); }
 
-    .btn-main:active:not(:disabled) {
-      transform: translateY(1px);
-    }
-
-    .btn:disabled {
-      background: #1a2920;
-      color: var(--text-dim);
-      border: 1px solid var(--border);
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-
-    /* --- ECRAN VIP UNLOCK --- */
-    .unlock-box {
-      background: var(--card);
-      border: 2px solid var(--amber);
-      border-radius: 18px;
-      padding: 24px 18px;
-      text-align: center;
-      box-shadow: 0 0 40px rgba(255, 170, 0, 0.2);
-    }
-
-    .unlock-badge {
-      display: inline-block;
-      background: rgba(255, 170, 0, 0.15);
-      border: 1px solid var(--amber);
-      color: var(--amber);
-      font-size: 10px;
-      font-weight: 800;
-      padding: 4px 12px;
-      border-radius: 20px;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-    }
-
-    .unlock-title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 20px;
-      font-weight: 900;
-      color: #ffffff;
-      margin-bottom: 8px;
-    }
-
-    .unlock-desc {
-      font-size: 12px;
-      color: var(--text-dim);
-      line-height: 1.5;
-      margin-bottom: 20px;
-    }
-
-    .action-cards {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .btn-deposit-gold {
-      background: linear-gradient(135deg, #ffaa00, #ff7700);
-      color: #000;
-      border: none;
-      border-radius: 14px;
-      padding: 18px 14px;
-      text-align: left;
-      cursor: pointer;
-      box-shadow: 0 0 25px rgba(255, 170, 0, 0.4);
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .btn-deposit-gold:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 35px rgba(255, 170, 0, 0.6);
-    }
-
-    .gold-left {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .gold-step {
-      font-size: 10px;
-      font-weight: 900;
-      color: rgba(0, 0, 0, 0.6);
-      letter-spacing: 1px;
-    }
-
-    .gold-main {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 15px;
-      font-weight: 900;
-      color: #000;
-    }
-
-    .gold-sub {
-      font-size: 10px;
-      font-weight: 700;
-      color: rgba(0, 0, 0, 0.8);
-      margin-top: 2px;
-    }
-
-    .gold-arrow {
-      font-size: 22px;
-      font-weight: 900;
-      color: #000;
-    }
-
-    .btn-tg-cyan {
-      background: rgba(0, 229, 255, 0.08);
-      border: 2px solid var(--cyan);
-      border-radius: 14px;
-      padding: 16px 14px;
-      text-align: left;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .btn-tg-cyan:hover {
-      background: rgba(0, 229, 255, 0.18);
-      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
-    }
-
-    .tg-main {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 13px;
-      font-weight: 900;
-      color: var(--cyan);
-    }
-
-    .tg-sub {
-      font-size: 10px;
-      color: var(--text-dim);
-      margin-top: 2px;
-    }
-
-    .footer-guarantee {
-      font-size: 10px;
-      color: var(--text-dim);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    @media (max-width: 360px) {
+      .game-thumb { width: 50px; height: 50px; }
+      .apple-multi { font-size: 8px; }
+      .apple-row { grid-template-columns: 40px repeat(5, 1fr); }
+      .apple-cell { height: 28px; font-size: 13px; }
+      .main-value { font-size: 40px; }
     }
   </style>
 </head>
 <body>
+<div class="scan-line"></div>
+
+<div class="access-gate" id="access-gate">
+  <div class="access-card">
+    <div class="radar"><span></span></div>
+    <div class="access-brand">HERMES SCAN</div>
+    <div class="access-ok" id="access-ok">CONNEXION...</div>
+    <div class="access-bar"><div class="access-fill" id="access-fill"></div></div>
+    <div class="access-author">Jean Dossou</div>
+  </div>
+</div>
 
 <div class="container">
-
-  <!-- TOP STATUS BAR -->
   <div class="top-bar">
-    <div class="brand" id="brand-title">
-      <div class="brand-dot"></div>
-      AI PREDICTOR v4.2
+    <div>
+      <div class="brand"><div class="brand-dot"></div>HERMES SCAN</div>
+      <div class="author">par Jean Dossou</div>
     </div>
-    <div class="status-badge" id="net-status">SERVEUR CONNECTÉ</div>
+    <div class="status-badge">VIP ON</div>
   </div>
 
-  <!-- ÉCRAN 0 : SÉLECTION DU JEU -->
+  <div class="live-strip">
+    <span class="live-pill">LIVE</span>
+    <span class="live-text" id="live-text">Koffi a retiré 41.200 XOF</span>
+    <span class="online-count" id="online-count">● 914</span>
+  </div>
+
+  <!-- SELECT -->
   <div class="screen active" id="screen-select">
     <div class="select-box">
-      <div class="select-title">SÉLECTIONNER LE JEU</div>
-      <div class="select-desc">Choisissez l'algorithme à pirater :</div>
-      
+      <div class="select-title">HERMES SCAN</div>
+      <div class="select-desc">Appuyez sur le jeu. C'est tout.</div>
+      <span class="vip-badge">ACCÈS ILLIMITÉ</span>
       <div class="game-grid">
-        <div class="game-card" onclick="startHack('apple')">
-          <div class="game-info">
-            <div class="game-name">🍎 APPLE OF FORTUNE</div>
-            <div class="game-sub">Détection du Chemin Gagnant</div>
-          </div>
-          <div style="color: var(--green); font-weight: 900;">➔</div>
+        <div class="game-card" onclick="openGame('aviator')">
+          <img class="game-thumb" alt="Aviator" src="logos/aviator.png" onerror="this.onerror=null;this.src='https://cdn.softswiss.net/i/s3/spribe/aviator.png'">
+          <div><div class="game-name">AVIATOR</div><div class="game-sub">Où retirer l'argent</div></div>
+          <div class="game-go">➔</div>
         </div>
-
-        <div class="game-card" style="order: -1;" onclick="startHack('aviator')">
-          <div class="game-info">
-            <div class="game-name">✈️ AVIATOR</div>
-            <div class="game-sub">Prédiction du Multiplicateur</div>
-          </div>
-          <div style="color: var(--green); font-weight: 900;">➔</div>
+        <div class="game-card" onclick="openGame('crash')">
+          <img class="game-thumb" alt="Crash" src="logos/crash.png" onerror="this.onerror=null;this.src='https://cdn.softswiss.net/i/s3/turbogames/Crash.png'">
+          <div><div class="game-name">CRASH</div><div class="game-sub">Où retirer l'argent</div></div>
+          <div class="game-go">➔</div>
         </div>
-
-        <div class="game-card" onclick="startHack('penalty')">
-          <div class="game-info">
-            <div class="game-name">⚽ PENALTY SHOOT-OUT</div>
-            <div class="game-sub">Détection de la Zone de But</div>
-          </div>
-          <div style="color: var(--green); font-weight: 900;">➔</div>
+        <div class="game-card" onclick="openGame('apple')">
+          <img class="game-thumb" alt="Apple of Fortune" src="logos/apple.png">
+          <div><div class="game-name">APPLE OF FORTUNE</div><div class="game-sub">Quelle pomme toucher</div></div>
+          <div class="game-go">➔</div>
+        </div>
+        <div class="game-card" onclick="openGame('penalty')">
+          <img class="game-thumb" alt="Penalty" src="logos/penalty.png" onerror="this.onerror=null;this.src='https://cdn.softswiss.net/i/s3/evoplay/PenaltyShootOut.png'">
+          <div><div class="game-name">PENALTY SHOOT-OUT</div><div class="game-sub">Où tirer le ballon</div></div>
+          <div class="game-go">➔</div>
         </div>
       </div>
-
     </div>
+    <div class="footer-author">HERMES SCAN · Auteur : <b>Jean Dossou</b></div>
   </div>
 
-  <!-- ÉCRAN 1 : CHARGEMENT HACKER -->
-  <div class="screen" id="screen-boot">
-    <div class="loader-box">
-      <div class="loader-title" id="boot-title">BYPASS DES ALGORITHMES</div>
-      <div class="loader-desc">Connexion au serveur du jeu en cours...</div>
-      
-      <div class="progress-bar">
-        <div class="progress-fill" id="boot-bar"></div>
-      </div>
-      
-      <div class="loader-desc" id="boot-pct" style="color: var(--green); font-weight: 700; margin-bottom: 0;">0%</div>
-    </div>
-  </div>
-
-  <!-- ÉCRAN 2A : PREDICTEUR AVIATOR -->
-  <div class="screen" id="screen-dash-aviator">
+  <!-- AVIATOR -->
+  <div class="screen" id="screen-aviator">
     <div class="step-banner">
-      <div class="step-number" id="step-num-av">ÉTAPE 1 SUR 2</div>
-      <div class="step-text" id="step-txt-av">Appuyez sur le GROS BOUTON VERT en bas !</div>
+      <div class="step-number" id="av-num">SIGNAL ILLIMITÉ</div>
+      <div class="step-text" id="av-txt">Appuyez sur le GROS BOUTON VERT</div>
     </div>
-
     <div class="signal-card">
-      <div class="signal-title">RETIRER VOTRE ARGENT À :</div>
-      
+      <div class="signal-title">Retirez votre argent à :</div>
       <div class="main-value-wrap">
-        <div class="main-value" id="val-safe">?.??x</div>
-        <div class="main-value-sub">← CASHOUT ICI SUR AVIATOR</div>
+        <div class="fly">✈</div>
+        <div class="main-value" id="av-safe">?.??x</div>
+        <div class="main-value-sub">COPIEZ CE CHIFFRE DANS AVIATOR</div>
       </div>
-
       <div class="sub-info">
-        <span class="sub-info-label">Crash estimé de l'avion :</span>
-        <span class="sub-info-val" id="val-crash">--.--x</span>
+        <span class="sub-info-label">L'avion tombe vers :</span>
+        <span class="sub-info-val" id="av-crash">--.--x</span>
       </div>
     </div>
-
-    <button class="btn btn-main" id="btn-scan-av">OBTENIR LE SIGNAL</button>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="openGame('select')">←</button>
+      <button class="btn btn-main" id="btn-av">VOIR LE SIGNAL</button>
+    </div>
+    <div class="footer-author">HERMES SCAN · Jean Dossou</div>
   </div>
 
-  <!-- ÉCRAN 2B : PREDICTEUR PENALTY SHOOT-OUT -->
-  <div class="screen" id="screen-dash-penalty">
+  <!-- CRASH -->
+  <div class="screen" id="screen-crash">
     <div class="step-banner">
-      <div class="step-number" id="step-num-pen">ANALYSE DU GARDIEN</div>
-      <div class="step-text" id="step-txt-pen">Cliquez sur le bouton pour détecter le tir réussi !</div>
+      <div class="step-number" id="cr-num">SIGNAL ILLIMITÉ</div>
+      <div class="step-text" id="cr-txt">Appuyez sur le GROS BOUTON VERT</div>
     </div>
-
     <div class="signal-card">
-      <div class="signal-title">ZONE DE TIR RECOMMANDÉE :</div>
-      
+      <div class="signal-title">Retirez votre argent à :</div>
+      <div class="crash-chart" id="cr-chart"></div>
+      <div class="main-value-wrap">
+        <div class="fly">🚀</div>
+        <div class="main-value" id="cr-safe">?.??x</div>
+        <div class="main-value-sub">COPIEZ CE CHIFFRE DANS CRASH</div>
+      </div>
+      <div class="sub-info">
+        <span class="sub-info-label">Le crash arrive vers :</span>
+        <span class="sub-info-val" id="cr-bust">--.--x</span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="openGame('select')">←</button>
+      <button class="btn btn-main" id="btn-cr">VOIR LE SIGNAL</button>
+    </div>
+    <div class="footer-author">HERMES SCAN · Jean Dossou</div>
+  </div>
+
+  <!-- APPLE -->
+  <div class="screen" id="screen-apple">
+    <div class="step-banner">
+      <div class="step-number" id="ap-num">SIGNAL ILLIMITÉ</div>
+      <div class="step-text" id="ap-txt">Appuyez. Touchez seulement les pommes vertes.</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-title">1 pomme saine par ligne — suivez le chemin</div>
+      <div class="apple-board" id="apple-board"></div>
+      <div class="sub-info">
+        <span class="sub-info-label">Chemin :</span>
+        <span class="sub-info-val" id="ap-path" style="color:var(--green);">10 niveaux</span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="openGame('select')">←</button>
+      <button class="btn btn-main" id="btn-ap">VOIR LE SIGNAL</button>
+    </div>
+    <div class="footer-author">HERMES SCAN · Jean Dossou</div>
+  </div>
+
+  <!-- PENALTY -->
+  <div class="screen" id="screen-penalty">
+    <div class="step-banner">
+      <div class="step-number" id="pe-num">SIGNAL ILLIMITÉ</div>
+      <div class="step-text" id="pe-txt">Appuyez sur le GROS BOUTON VERT</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-title">Tirez le ballon ICI :</div>
       <div class="goal-container">
         <div class="goal-grid">
           <div class="goal-spot" id="spot-tl">HAUT GAUCHE</div>
@@ -714,302 +499,234 @@
           <div class="goal-spot" id="spot-br">BAS DROITE</div>
         </div>
       </div>
-
       <div class="sub-info">
-        <span class="sub-info-label">Probabilité de BUT :</span>
-        <span class="sub-info-val" id="val-prob" style="color: var(--green);">98.8%</span>
+        <span class="sub-info-label">Chance de BUT :</span>
+        <span class="sub-info-val" id="pe-prob" style="color:var(--green);">98.8%</span>
       </div>
     </div>
-
-    <button class="btn btn-main" id="btn-scan-pen">OBTENIR LE SIGNAL</button>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="openGame('select')">←</button>
+      <button class="btn btn-main" id="btn-pe">VOIR LE SIGNAL</button>
+    </div>
+    <div class="footer-author">HERMES SCAN · Jean Dossou</div>
   </div>
-
-  <!-- ÉCRAN 3 : DÉBLOCAGE VIP -->
-  <!-- ECRAN 2C : PREDICTEUR APPLE OF FORTUNE -->
-  <div class="screen" id="screen-dash-apple">
-    <div class="step-banner">
-      <div class="step-number" id="step-num-apple">ANALYSE DU VERGER</div>
-      <div class="step-text" id="step-txt-apple">Cliquez sur le bouton pour trouver les pommes sûres !</div>
-    </div>
-
-    <div class="signal-card">
-      <div class="signal-title">CHEMIN RECOMMANDÉ :</div>
-      <div class="apple-board" id="apple-board"></div>
-      <div class="sub-info">
-        <span class="sub-info-label">Objectif de retrait :</span>
-        <span class="sub-info-val" id="apple-target" style="color: var(--green);">--</span>
-      </div>
-    </div>
-
-    <button class="btn btn-main" id="btn-scan-apple">OBTENIR LE SIGNAL</button>
-  </div>
-
-  <div class="screen" id="screen-unlock">
-    <div class="unlock-box">
-      
-      <div class="unlock-badge">TEST GRATUIT TERMINÉ</div>
-      <div class="unlock-title">DÉBLOQUER L'ACCÈS ILLIMITÉ</div>
-      <div class="unlock-desc">
-        Le signal gratuit est validé ! Pour activer le Bot en continu et recevoir tous les signaux 24/7 :
-      </div>
-
-      <div class="action-cards">
-        
-        <!-- ÉTAPE 1 : BOUTON OR MAGNETIQUE -->
-        <div class="btn-deposit-gold" id="btn-deposit">
-          <div class="gold-left">
-            <span class="gold-step">ÉTAPE 1 (OBLIGATOIRE)</span>
-            <span class="gold-main">RECHARGER VOTRE COMPTE</span>
-            <span class="gold-sub">Déposez min. 1200 XOF sur le jeu pour activer</span>
-          </div>
-          <div class="gold-arrow">➔</div>
-        </div>
-
-        <!-- ÉTAPE 2 : TELEGRAM -->
-        <div class="btn-tg-cyan" id="btn-tg">
-          <div>
-            <div class="tg-main">ÉTAPE 2 : ENVOYER LA PREUVE</div>
-            <div class="tg-sub">Envoyez la capture d'écran pour recevoir la clé VIP</div>
-          </div>
-          <div style="color: var(--cyan); font-weight: 900; font-size: 18px;">➔</div>
-        </div>
-
-      </div>
-
-      <div class="footer-guarantee">
-        <span>🔒 Activation automatique en 2 minutes</span>
-      </div>
-
-    </div>
-  </div>
-
 </div>
 
 <script>
-  let currentGame = '';
+  /* Apple of Fortune: 10 rows × 5 cells, official 1xGames multipliers */
+  const APPLE_MULTIS = ['1.23x','1.54x','1.93x','2.41x','4.02x','6.71x','11.18x','27.97x','69.93x','349.68x'];
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
   }
 
-  /* Lancement Hack après Choix de Jeu */
-  function startHack(game) {
-    currentGame = game;
-    const brandTitle = document.getElementById('brand-title');
-    const bootTitle = document.getElementById('boot-title');
-
-    if (game === 'apple') {
-      brandTitle.innerHTML = '<div class="brand-dot"></div> APPLE HACK v4.2';
-      bootTitle.textContent = 'ANALYSE APPLE OF FORTUNE';
-    } else if (game === 'aviator') {
-      brandTitle.innerHTML = '<div class="brand-dot"></div> AVIATOR HACK v4.2';
-      bootTitle.textContent = 'BYPASS ALGORITHME AVIATOR';
-    } else {
-      brandTitle.innerHTML = '<div class="brand-dot"></div> PENALTY HACK v4.2';
-      bootTitle.textContent = 'ANALYSIS GARDIEN PENALTY';
-    }
-
-    showScreen('screen-boot');
-    runBootLoader();
+  function openGame(game) {
+    if (game === 'select') return showScreen('screen-select');
+    if (game === 'apple') { resetAppleBoard(); showScreen('screen-apple'); return; }
+    showScreen('screen-' + game);
   }
 
-  /* Chargement Hacker */
-  function runBootLoader() {
-    let progress = 0;
-    const bootBar = document.getElementById('boot-bar');
-    const bootPct = document.getElementById('boot-pct');
-    bootBar.style.width = '0%';
+  /* 80% → 1.20–2.00   20% → 2.00–3.00 */
+  function cashoutX() {
+    const n = Math.random() < 0.8
+      ? 1.20 + Math.random() * 0.80
+      : 2.00 + Math.random() * 1.00;
+    return n.toFixed(2);
+  }
+  function crashAbove(safe) {
+    return (parseFloat(safe) + 0.12 + Math.random() * 0.55).toFixed(2);
+  }
 
-    const bootInterval = setInterval(() => {
-      progress += Math.floor(Math.random() * 18) + 6;
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(bootInterval);
-        setTimeout(() => {
-          if (currentGame === 'apple') {
-            resetAppleBoard();
-            showScreen('screen-dash-apple');
-          } else if (currentGame === 'aviator') {
-            showScreen('screen-dash-aviator');
-          } else {
-            showScreen('screen-dash-penalty');
-          }
-        }, 300);
+  /* ACCESS */
+  (function bootAccess() {
+    const fill = document.getElementById('access-fill');
+    const ok = document.getElementById('access-ok');
+    let p = 0;
+    const t = setInterval(() => {
+      p += 18 + Math.random() * 16;
+      if (p >= 100) {
+        p = 100;
+        clearInterval(t);
+        ok.textContent = 'ACCÈS AUTORISÉ';
+        ok.classList.add('ready');
+        setTimeout(() => document.getElementById('access-gate').classList.add('hide'), 280);
       }
-      bootBar.style.width = progress + '%';
-      bootPct.textContent = progress + '%';
-    }, 120);
+      fill.style.width = p + '%';
+    }, 55);
+  })();
+
+  /* LIVE */
+  const names = ['Koffi','Awa','Yao','Fatou','Kodjo','Amina','Mensah','Adjoua','Ibrahim','Akossiwa','Jean','Marie'];
+  const gamesLive = ['Aviator','Crash','Apple','Penalty'];
+  let online = 914;
+  setInterval(() => {
+    online += Math.floor(Math.random() * 7) - 3;
+    online = Math.min(990, Math.max(820, online));
+    document.getElementById('online-count').textContent = '● ' + online;
+  }, 1800);
+  setInterval(() => {
+    const n = names[Math.floor(Math.random() * names.length)];
+    const g = gamesLive[Math.floor(Math.random() * gamesLive.length)];
+    const xof = (14000 + Math.floor(Math.random() * 88000)).toLocaleString('fr-FR');
+    const el = document.getElementById('live-text');
+    el.textContent = n + ' a gagné ' + xof + ' XOF · ' + g;
+  }, 2500);
+
+  function runMultiplierScan(btn, safeEl, crashEl, numEl, txtEl, gameName) {
+    btn.disabled = true;
+    btn.textContent = 'SCAN...';
+    numEl.textContent = 'LECTURE...';
+    txtEl.textContent = 'Calcul du chiffre sûr...';
+    const safe = cashoutX();
+    const crash = crashAbove(safe);
+    let i = 0;
+    const flicker = setInterval(() => {
+      safeEl.textContent = (1.1 + Math.random() * 2.2).toFixed(2) + 'x';
+      safeEl.classList.remove('tick');
+      void safeEl.offsetWidth;
+      safeEl.classList.add('tick');
+      i += 1;
+      if (i >= 6) {
+        clearInterval(flicker);
+        safeEl.textContent = safe + 'x';
+        crashEl.textContent = crash + 'x';
+        numEl.textContent = 'SIGNAL PRÊT';
+        txtEl.textContent = 'Retirez à ' + safe + 'x — pas plus !';
+        btn.disabled = false;
+        btn.textContent = 'NOUVEAU SIGNAL';
+      }
+    }, 50);
   }
 
-  /* --- LOGIQUE APPLE OF FORTUNE --- */
-  const appleMultipliers = ['1.23x'];
+  document.getElementById('btn-av').addEventListener('click', () => {
+    runMultiplierScan(
+      document.getElementById('btn-av'),
+      document.getElementById('av-safe'),
+      document.getElementById('av-crash'),
+      document.getElementById('av-num'),
+      document.getElementById('av-txt'),
+      'Aviator'
+    );
+  });
+
+  function drawCrashChart(target) {
+    const w = 320, h = 78;
+    let d = 'M 0 ' + (h - 8);
+    const steps = 18;
+    for (let i = 1; i <= steps; i++) {
+      const x = (i / steps) * w;
+      const y = (h - 8) - Math.pow(i / steps, 1.45) * (h - 18);
+      d += ' L ' + x.toFixed(1) + ' ' + y.toFixed(1);
+    }
+    document.getElementById('cr-chart').innerHTML =
+      '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+      '<path d="' + d + '" fill="none" stroke="#00ff88" stroke-width="2.4" stroke-linecap="round"/>' +
+      '<circle cx="' + w + '" cy="10" r="4" fill="#29d4ff"/></svg>';
+  }
+
+  document.getElementById('btn-cr').addEventListener('click', () => {
+    drawCrashChart();
+    runMultiplierScan(
+      document.getElementById('btn-cr'),
+      document.getElementById('cr-safe'),
+      document.getElementById('cr-bust'),
+      document.getElementById('cr-num'),
+      document.getElementById('cr-txt'),
+      'Crash'
+    );
+  });
+
+  /* APPLE — one healthy apple per row */
   const appleBoard = document.getElementById('apple-board');
-  const btnScanApple = document.getElementById('btn-scan-apple');
-  const stepNumApple = document.getElementById('step-num-apple');
-  const stepTxtApple = document.getElementById('step-txt-apple');
-  const appleTarget = document.getElementById('apple-target');
+  const btnAp = document.getElementById('btn-ap');
 
   function resetAppleBoard() {
     appleBoard.innerHTML = '';
-    appleMultipliers.forEach((multiplier, rowIndex) => {
+    APPLE_MULTIS.forEach((multi) => {
       const row = document.createElement('div');
       row.className = 'apple-row';
-      row.dataset.row = rowIndex;
-      row.innerHTML = '<div class="apple-multi">' + multiplier + '</div>';
-
-      for (let column = 0; column < 5; column++) {
+      row.innerHTML = '<div class="apple-multi">' + multi + '</div>';
+      for (let c = 0; c < 5; c++) {
         const cell = document.createElement('div');
         cell.className = 'apple-cell';
-        cell.dataset.column = column;
         cell.textContent = '?';
         row.appendChild(cell);
       }
       appleBoard.appendChild(row);
     });
-
-    btnScanApple.disabled = false;
-    btnScanApple.textContent = 'OBTENIR LE SIGNAL';
-    stepNumApple.textContent = 'ANALYSE DU VERGER';
-    stepTxtApple.textContent = 'Cliquez sur le bouton pour trouver les pommes sûres !';
-    appleTarget.textContent = '--';
+    btnAp.disabled = false;
+    btnAp.textContent = 'VOIR LE SIGNAL';
+    document.getElementById('ap-num').textContent = 'SIGNAL ILLIMITÉ';
+    document.getElementById('ap-txt').textContent = 'Appuyez. Touchez seulement les pommes vertes.';
+    document.getElementById('ap-path').textContent = '10 niveaux';
   }
 
-  btnScanApple.addEventListener('click', () => {
-    appleBoard.querySelectorAll('.apple-cell').forEach(cell => {
-      cell.classList.remove('safe', 'scanning');
-      cell.textContent = '?';
-    });
-    btnScanApple.disabled = true;
-    btnScanApple.textContent = 'ANALYSE DES POMMES...';
-    stepNumApple.textContent = 'RECHERCHE DE FAILLE...';
-    stepTxtApple.textContent = 'Calcul du chemin le plus sécurisé...';
-
-    const path = appleMultipliers.map(() => Math.floor(Math.random() * 5));
+  btnAp.addEventListener('click', () => {
+    resetAppleBoard();
+    btnAp.disabled = true;
+    btnAp.textContent = 'SCAN...';
+    document.getElementById('ap-txt').textContent = 'Recherche des pommes saines...';
     const rows = Array.from(appleBoard.querySelectorAll('.apple-row'));
-    let currentRow = 0;
+    const path = APPLE_MULTIS.map(() => Math.floor(Math.random() * 5));
+    let r = 0;
 
-    const revealNextRow = () => {
-      if (currentRow >= rows.length) {
-        appleTarget.textContent = appleMultipliers[appleMultipliers.length - 1];
-        stepNumApple.textContent = 'CHEMIN TROUVÉ !';
-        stepTxtApple.textContent = 'Suivez uniquement les pommes vertes, puis retirez à ' + appleTarget.textContent + ' !';
-        btnScanApple.textContent = 'NOUVEAU SIGNAL 🍎';
-        btnScanApple.disabled = false;
+    const reveal = () => {
+      if (r >= rows.length) {
+        document.getElementById('ap-num').textContent = 'CHEMIN PRÊT';
+        document.getElementById('ap-txt').textContent = '1 pomme verte par ligne. Du bas vers le haut.';
+        document.getElementById('ap-path').textContent = '10 / 10';
+        btnAp.disabled = false;
+        btnAp.textContent = 'NOUVEAU SIGNAL';
+        appleBoard.scrollTop = appleBoard.scrollHeight;
         return;
       }
-
-      const cells = Array.from(rows[currentRow].querySelectorAll('.apple-cell'));
-      cells.forEach(cell => cell.classList.add('scanning'));
-
+      const cells = Array.from(rows[r].querySelectorAll('.apple-cell'));
+      cells.forEach(c => c.classList.add('scanning'));
       setTimeout(() => {
-        cells.forEach(cell => cell.classList.remove('scanning'));
-        const safeCell = cells[path[currentRow]];
-        safeCell.classList.add('safe');
-        safeCell.textContent = '🍎';
-        appleTarget.textContent = appleMultipliers[currentRow];
-        currentRow += 1;
-        setTimeout(revealNextRow, 260);
-      }, 420);
+        cells.forEach(c => c.classList.remove('scanning'));
+        const safe = cells[path[r]];
+        safe.classList.add('safe');
+        safe.textContent = '🍎';
+        document.getElementById('ap-path').textContent = (r + 1) + ' / 10';
+        rows[r].scrollIntoView({ block: 'nearest' });
+        r += 1;
+        setTimeout(reveal, 55);
+      }, 70);
     };
-
-    setTimeout(revealNextRow, 900);
+    setTimeout(reveal, 80);
   });
 
   resetAppleBoard();
 
-  /* --- LOGIQUE AVIATOR --- */
-  const btnScanAv = document.getElementById('btn-scan-av');
-  const valSafe = document.getElementById('val-safe');
-  const valCrash = document.getElementById('val-crash');
-  const stepNumAv = document.getElementById('step-num-av');
-  const stepTxtAv = document.getElementById('step-txt-av');
+  /* PENALTY */
+  const spots = ['tl','tr','c','bl','br'];
+  const spotNames = { tl:'HAUT GAUCHE', tr:'HAUT DROITE', c:'CENTRE', bl:'BAS GAUCHE', br:'BAS DROITE' };
+  const btnPe = document.getElementById('btn-pe');
 
-  btnScanAv.addEventListener('click', () => {
-    btnScanAv.disabled = true;
-    btnScanAv.textContent = 'INJECTION DU HACK...';
-    
-    stepNumAv.textContent = 'ANALYSE EN COURS';
-    stepTxtAv.textContent = 'Calcul du multiplicateur le plus sécurisé...';
-
-    setTimeout(() => {
-      const crashVal = (1.8 + Math.random() * 3.5).toFixed(2);
-      const safeVal = (crashVal * 0.68).toFixed(2);
-
-      valSafe.textContent = safeVal + 'x';
-      valCrash.textContent = crashVal + 'x';
-
-      stepNumAv.textContent = 'SIGNAL PRÊT !';
-      stepTxtAv.textContent = 'Entrez sur Aviator et retirez à ' + safeVal + 'x exacts !';
-
-      setTimeout(() => {
-        btnScanAv.textContent = 'ROUND EN COURS...';
-        let current = 1.00;
-        
-        const roundInterval = setInterval(() => {
-          current += 0.08;
-          if (current >= parseFloat(crashVal)) {
-            clearInterval(roundInterval);
-            valCrash.textContent = crashVal + 'x (CRASH)';
-            btnScanAv.textContent = 'SIGNAL TERMINÉ';
-            
-            setTimeout(() => {
-              btnScanAv.disabled = false;
-              btnScanAv.textContent = 'NOUVEAU SIGNAL';
-            }, 1200);
-          }
-        }, 70);
-      }, 2500);
-
-    }, 1800);
+  btnPe.addEventListener('click', () => {
+    btnPe.disabled = true;
+    btnPe.textContent = 'SCAN...';
+    spots.forEach(s => document.getElementById('spot-' + s).classList.remove('target','scanning'));
+    document.getElementById('pe-txt').textContent = 'Recherche de l\'angle...';
+    let i = 0;
+    const scan = setInterval(() => {
+      spots.forEach(s => document.getElementById('spot-' + s).classList.remove('scanning'));
+      document.getElementById('spot-' + spots[i % 5]).classList.add('scanning');
+      i += 1;
+      if (i > 7) {
+        clearInterval(scan);
+        spots.forEach(s => document.getElementById('spot-' + s).classList.remove('scanning'));
+        const chosen = spots[Math.floor(Math.random() * spots.length)];
+        document.getElementById('spot-' + chosen).classList.add('target');
+        document.getElementById('pe-num').textContent = 'SIGNAL PRÊT';
+        document.getElementById('pe-txt').textContent = 'TIREZ ICI : ' + spotNames[chosen];
+        document.getElementById('pe-prob').textContent = (97.4 + Math.random() * 2.1).toFixed(1) + '%';
+        btnPe.disabled = false;
+        btnPe.textContent = 'NOUVEAU SIGNAL';
+      }
+    }, 55);
   });
-
-  /* --- LOGIQUE PENALTY SHOOT-OUT --- */
-  const btnScanPen = document.getElementById('btn-scan-pen');
-  const stepNumPen = document.getElementById('step-num-pen');
-  const stepTxtPen = document.getElementById('step-txt-pen');
-  const spots = ['tl', 'tr', 'c', 'bl', 'br'];
-  const spotNames = {
-    'tl': 'HAUT GAUCHE',
-    'tr': 'HAUT DROITE',
-    'c': 'CENTRE',
-    'bl': 'BAS GAUCHE',
-    'br': 'BAS DROITE'
-  };
-
-  btnScanPen.addEventListener('click', () => {
-    btnScanPen.disabled = true;
-    btnScanPen.textContent = 'ANALYSE DU GARDIEN...';
-    
-    // Reset spots
-    spots.forEach(s => document.getElementById('spot-' + s).classList.remove('target'));
-
-    stepNumPen.textContent = 'RECHERCHE DE FAILLE...';
-    stepTxtPen.textContent = 'Détection de l\'angle mort du gardien...';
-
-    setTimeout(() => {
-      // Pick random winning spot
-      const chosenSpot = spots[Math.floor(Math.random() * spots.length)];
-      const targetElem = document.getElementById('spot-' + chosenSpot);
-      
-      targetElem.classList.add('target');
-
-      stepNumPen.textContent = 'SIGNAL OBTENU !';
-      stepTxtPen.textContent = 'TIRER EN : ' + spotNames[chosenSpot] + ' !';
-      btnScanPen.textContent = 'TIR EN COURS...';
-
-      setTimeout(() => {
-        btnScanPen.textContent = 'BUT MARQUÉ ! ⚽';
-        
-        setTimeout(() => {
-          btnScanPen.disabled = false;
-          btnScanPen.textContent = 'NOUVEAU SIGNAL';
-        }, 1500);
-      }, 2500);
-
-    }, 1800);
-  });
-
 </script>
 </body>
 </html>
