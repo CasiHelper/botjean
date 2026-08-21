@@ -313,6 +313,38 @@
       box-shadow: 0 0 10px var(--green-glow); animation: pulse 0.8s infinite alternate;
     }
 
+    .mines-opts {
+      display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .mines-chip {
+      background: rgba(0,0,0,0.45); border: 1px solid var(--border);
+      color: var(--text-dim); border-radius: 8px; padding: 7px 11px;
+      font-size: 11px; font-weight: 900; cursor: pointer;
+      font-family: inherit;
+    }
+    .mines-chip:disabled { opacity: 0.45; cursor: default; }
+    .mines-board {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;
+      background: #071209; border: 2px solid var(--border);
+      border-radius: 12px; padding: 8px; margin-bottom: 10px;
+    }
+    .mines-cell {
+      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+      background: rgba(0,0,0,0.55); color: var(--text-dim);
+      font-size: 18px; font-weight: 900;
+    }
+    .mines-cell.scanning { border-color: var(--cyan); background: rgba(41,212,255,0.12); }
+    .mines-cell.safe {
+      background: rgba(0,255,136,0.28); border: 2px solid var(--green); color: #fff;
+      box-shadow: 0 0 10px var(--green-glow); animation: pulse 0.8s infinite alternate;
+    }
+    .mines-cell.mine {
+      background: rgba(255,45,85,0.12); border: 1px solid rgba(255,45,85,0.28);
+      opacity: 0.4; font-size: 14px;
+    }
+
     .btn-row { display: flex; gap: 8px; margin-top: 10px; }
     .btn {
       flex: 1; border: none; border-radius: 14px;
@@ -386,22 +418,27 @@
       <span class="vip-badge">ACCÈS ILLIMITÉ</span>
       <div class="game-grid">
         <div class="game-card" onclick="openGame('aviator')">
-          <img class="game-thumb" alt="Aviator" src="logos/aviator.png" onerror="this.onerror=null;this.src='https://cdn.softswiss.net/i/s3/spribe/aviator.png'">
+          <img class="game-thumb" alt="Aviator" src="https://cdn.softswiss.net/i/s3/spribe/aviator.png">
           <div><div class="game-name">AVIATOR</div><div class="game-sub">Où retirer l'argent</div></div>
           <div class="game-go">➔</div>
         </div>
         <div class="game-card" onclick="openGame('crash')">
-          <img class="game-thumb" alt="Crash" src="logos/crash.png" onerror="this.onerror=null;this.src='https://cdn.softswiss.net/i/s3/turbogames/Crash.png'">
+          <img class="game-thumb" alt="Crash" src="https://cdn.softswiss.net/i/s3/turbogames/Crash.png">
           <div><div class="game-name">CRASH</div><div class="game-sub">Où retirer l'argent</div></div>
           <div class="game-go">➔</div>
         </div>
         <div class="game-card" onclick="openGame('apple')">
-          <img class="game-thumb" alt="Apple of Fortune" src="logos/apple.png">
+          <img class="game-thumb" alt="Apple of Fortune" src="https://img.icons8.com/fluency/96/apple.png" onerror="this.onerror=null;this.src='https://cdn-icons-png.flaticon.com/512/415/415733.png'">
           <div><div class="game-name">APPLE OF FORTUNE</div><div class="game-sub">Quelle pomme toucher</div></div>
           <div class="game-go">➔</div>
         </div>
+        <div class="game-card" onclick="openGame('mines')">
+          <img class="game-thumb" alt="Mines" src="https://cdn.softswiss.net/i/s3/spribe/mines.png">
+          <div><div class="game-name">MINES</div><div class="game-sub">Quelles cases ouvrir</div></div>
+          <div class="game-go">➔</div>
+        </div>
         <div class="game-card" onclick="openGame('penalty')">
-          <img class="game-thumb" alt="Penalty" src="logos/penalty.png" onerror="this.onerror=null;this.src='https://cdn.softswiss.net/i/s3/evoplay/PenaltyShootOut.png'">
+          <img class="game-thumb" alt="Penalty" src="https://cdn.softswiss.net/i/s3/evoplay/PenaltyShootOut.png">
           <div><div class="game-name">PENALTY SHOOT-OUT</div><div class="game-sub">Où tirer le ballon</div></div>
           <div class="game-go">➔</div>
         </div>
@@ -510,6 +547,32 @@
     </div>
     <div class="footer-author">HERMES SCAN · Jean Dossou</div>
   </div>
+
+  <!-- MINES -->
+  <div class="screen" id="screen-mines">
+    <div class="step-banner">
+      <div class="step-number" id="mn-num">SIGNAL ILLIMITÉ</div>
+      <div class="step-text" id="mn-txt">Appuyez. Ouvrez seulement les gemmes.</div>
+    </div>
+    <div class="signal-card">
+      <div class="signal-title">Grille 5×5 — évitez les mines</div>
+      <div class="mines-opts" id="mines-opts">
+        <button type="button" class="mines-chip on" data-mines="3">3 MINES</button>
+        <button type="button" class="mines-chip" data-mines="5">5 MINES</button>
+        <button type="button" class="mines-chip" data-mines="8">8 MINES</button>
+      </div>
+      <div class="mines-board" id="mines-board"></div>
+      <div class="sub-info">
+        <span class="sub-info-label">Retrait sûr :</span>
+        <span class="sub-info-val" id="mn-cash" style="color:var(--green);">--.--x</span>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-back" onclick="openGame('select')">←</button>
+      <button class="btn btn-main" id="btn-mn">VOIR LE SIGNAL</button>
+    </div>
+    <div class="footer-author">HERMES SCAN · Jean Dossou</div>
+  </div>
 </div>
 
 <script>
@@ -524,6 +587,7 @@
   function openGame(game) {
     if (game === 'select') return showScreen('screen-select');
     if (game === 'apple') { resetAppleBoard(); showScreen('screen-apple'); return; }
+    if (game === 'mines') { resetMinesBoard(); showScreen('screen-mines'); return; }
     showScreen('screen-' + game);
   }
 
@@ -558,7 +622,7 @@
 
   /* LIVE */
   const names = ['Koffi','Awa','Yao','Fatou','Kodjo','Amina','Mensah','Adjoua','Ibrahim','Akossiwa','Jean','Marie'];
-  const gamesLive = ['Aviator','Crash','Apple','Penalty'];
+  const gamesLive = ['Aviator','Crash','Apple','Mines','Penalty'];
   let online = 914;
   setInterval(() => {
     online += Math.floor(Math.random() * 7) - 3;
@@ -727,6 +791,114 @@
       }
     }, 55);
   });
+
+  /* MINES — Spribe 5×5, RTP 97%. Player picks mine count; each gem raises cashout. */
+  const MINES_TOTAL = 25;
+  const minesBoard = document.getElementById('mines-board');
+  const btnMn = document.getElementById('btn-mn');
+  let minesCount = 3;
+
+  function comb(n, k) {
+    if (k < 0 || k > n) return 0;
+    k = Math.min(k, n - k);
+    let r = 1;
+    for (let i = 1; i <= k; i++) r = r * (n - k + i) / i;
+    return r;
+  }
+  /* Official Spribe formula: 0.97 × C(25,s) / C(25−N,s) */
+  function minesMultiplier(mines, gems) {
+    if (gems <= 0) return 1;
+    return 0.97 * comb(MINES_TOTAL, gems) / comb(MINES_TOTAL - mines, gems);
+  }
+  /* Conservative cashout: stay around Aviator's 1.20–2.00x / ~55–80% survival */
+  function minesSafeClicks(mines) {
+    const maxGems = MINES_TOTAL - mines;
+    const picks = [];
+    for (let k = 1; k <= Math.min(8, maxGems); k++) {
+      const survive = comb(maxGems, k) / comb(MINES_TOTAL, k);
+      const x = minesMultiplier(mines, k);
+      if (survive >= 0.52 && x >= 1.18 && x <= 2.55) picks.push(k);
+    }
+    if (!picks.length) return Math.max(1, Math.min(3, maxGems));
+    return picks[Math.floor(Math.random() * picks.length)];
+  }
+
+  function resetMinesBoard() {
+    minesBoard.innerHTML = '';
+    for (let i = 0; i < MINES_TOTAL; i++) {
+      const cell = document.createElement('div');
+      cell.className = 'mines-cell';
+      cell.textContent = '?';
+      minesBoard.appendChild(cell);
+    }
+    btnMn.disabled = false;
+    btnMn.textContent = 'VOIR LE SIGNAL';
+    document.querySelectorAll('.mines-chip').forEach(c => { c.disabled = false; });
+    document.getElementById('mn-num').textContent = 'SIGNAL ILLIMITÉ';
+    document.getElementById('mn-txt').textContent = 'Appuyez. Ouvrez seulement les gemmes.';
+    document.getElementById('mn-cash').textContent = minesCount + ' mines';
+  }
+
+  document.querySelectorAll('.mines-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      document.querySelectorAll('.mines-chip').forEach(c => c.classList.remove('on'));
+      chip.classList.add('on');
+      minesCount = parseInt(chip.getAttribute('data-mines'), 10);
+      resetMinesBoard();
+    });
+  });
+
+  btnMn.addEventListener('click', () => {
+    resetMinesBoard();
+    btnMn.disabled = true;
+    btnMn.textContent = 'SCAN...';
+    document.querySelectorAll('.mines-chip').forEach(c => { c.disabled = true; });
+    document.getElementById('mn-txt').textContent = 'Lecture de la grille 5×5...';
+    const cells = Array.from(minesBoard.querySelectorAll('.mines-cell'));
+    const clicks = minesSafeClicks(minesCount);
+    const order = cells.map((_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = order[i]; order[i] = order[j]; order[j] = t;
+    }
+    const gems = order.slice(0, clicks);
+    let step = 0;
+    const scan = setInterval(() => {
+      cells.forEach(c => c.classList.remove('scanning'));
+      cells[step % MINES_TOTAL].classList.add('scanning');
+      step += 1;
+      if (step > 9) {
+        clearInterval(scan);
+        cells.forEach(c => c.classList.remove('scanning'));
+        let g = 0;
+        const reveal = () => {
+          if (g >= gems.length) {
+            const cash = minesMultiplier(minesCount, clicks).toFixed(2);
+            document.getElementById('mn-num').textContent = 'SIGNAL PRÊT';
+            document.getElementById('mn-txt').textContent =
+              'Ouvrez ' + clicks + ' gemmes, puis retirez à ' + cash + 'x';
+            document.getElementById('mn-cash').textContent = cash + 'x · ' + clicks + ' cases';
+            btnMn.disabled = false;
+            btnMn.textContent = 'NOUVEAU SIGNAL';
+            document.querySelectorAll('.mines-chip').forEach(c => { c.disabled = false; });
+            return;
+          }
+          const cell = cells[gems[g]];
+          cell.classList.add('scanning');
+          setTimeout(() => {
+            cell.classList.remove('scanning');
+            cell.classList.add('safe');
+            cell.textContent = '⭐';
+            g += 1;
+            setTimeout(reveal, 55);
+          }, 70);
+        };
+        setTimeout(reveal, 80);
+      }
+    }, 45);
+  });
+
+  resetMinesBoard();
 </script>
 </body>
 </html>
